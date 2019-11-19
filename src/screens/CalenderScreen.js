@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View } from "react-native";
 import { SafeAreaView } from "react-navigation";
 import { Calendar, CalendarList, Agenda } from "react-native-calendars";
 import Header from "../components/SigninScreenComponents/Header";
+import { StlrContext } from "../context/StlrContext";
 
 export default function CalenderScreen() {
+  const { username } = useContext(StlrContext);
   return (
     <SafeAreaView style={{ flex: 1 }} forceInset={{ top: "always" }}>
-      <Header message="Calendar" />
+      <Header message="Calendar" options={false} username={username} />
       <Calendar
         // Initially visible month. Default = Date()
         current={Date()}

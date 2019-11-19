@@ -4,7 +4,7 @@ import { View, StyleSheet, Image } from "react-native";
 export default function SigninImage() {
   return (
     <View style={styles.viewImg}>
-      <Image source={require("../../stlr.png")} style={styles.imageStyle} />
+      <Image source={require("../../stlr.jpg")} style={styles.imageStyle} />
     </View>
   );
 }
@@ -12,8 +12,8 @@ export default function SigninImage() {
 const styles = StyleSheet.create({
   imageStyle: {
     width: 125,
-    height: 125,
-    marginBottom: 50
+    height: 135,
+    marginBottom: 40
   },
   viewImg: {
     justifyContent: "center",

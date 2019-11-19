@@ -1,11 +1,12 @@
-import React from "react";
-import { Text, View, StyleSheet, FlatList } from "react-native";
+import React, { useEffect, useContext, useState } from "react";
 import { SafeAreaView } from "react-navigation";
 
 import Header from "../components/SigninScreenComponents/Header";
+import TaggedEvents from "../components/EventsScreenComponents/TaggedEvents";
+import { StlrContext } from "../context/StlrContext";
 
 // fake data
-const events = [
+const fakeevents = [
   {
     title: "STLR 1",
     Date: "19/08/2019",
@@ -33,67 +34,61 @@ const events = [
   }
 ];
 
+const fakeStudentEvents = [
+  {
+    title: "STLR 10",
+    Date: "19/08/2019",
+    Description: "Very cool event"
+  },
+  {
+    title: "STLR 21",
+    Date: "19/08/2019",
+    Description: "Very shit event"
+  },
+  {
+    title: "STLR 39",
+    Date: "19/08/2019",
+    Description: "cool event"
+  },
+  {
+    title: "STLR 44",
+    Date: "19/08/2019",
+    Description: "Very cool"
+  },
+  {
+    title: "STLR 59",
+    Date: "19/08/2019",
+    Description: "Very cool"
+  }
+];
+
 const EventsScreen = () => {
+  const { events, username, setUsername } = useContext(StlrContext);
+  const [active, setActive] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      setUsername(username.toUpperCase());
+      // await console.log(events);
+    })();
+  });
+
   return (
     <SafeAreaView style={{ flex: 1 }} forceInset={{ top: "always" }}>
-      <Header message="Upcoming Events" />
-      <View style={styles.mainView}>
-        <FlatList
-          data={events}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => (
-            <View style={styles.eventView}>
-              <View style={styles.eventDateView}>
-                <Text style={styles.eventContent}>{item.Date}</Text>
-              </View>
-              <View style={styles.eventDescView}>
-                <View style={styles.eventContent}>
-                  <Text style={styles.titleStyle}>{item.title}</Text>
-                  <Text>{item.Description}</Text>
-                </View>
-              </View>
-            </View>
-          )}
-          keyExtractor={item => item.title}
-        />
-      </View>
+      <Header
+        message="Events"
+        username={username}
+        options={true}
+        active={active}
+        setActive={setActive}
+      />
+      {active ? (
+        <TaggedEvents data={fakeStudentEvents} />
+      ) : (
+        <TaggedEvents data={fakeevents} />
+      )}
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  mainView: {
-    marginHorizontal: 15,
-    flex: 1
-  },
-  eventView: {
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 2,
-      height: 2
-    },
-    shadowOpacity: 0.23,
-    shadowRadius: 2.62,
-    elevation: 4,
-    backgroundColor: "#f3f3f3",
-    flexDirection: "row",
-    height: 130,
-    marginVertical: 15
-  },
-  eventDateView: {
-    flex: 1,
-    backgroundColor: "#E8E8E8"
-  },
-  eventDescView: {
-    flex: 3
-  },
-  titleStyle: {
-    fontSize: 20,
-    paddingBottom: 15
-  },
-  eventContent: {
-    padding: 10
-  }
-});
 
 export default EventsScreen;

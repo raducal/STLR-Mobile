@@ -1,117 +1,70 @@
-import React, { Component } from "react";
+import React, { useContext } from "react";
 import { Text, View, StyleSheet } from "react-native";
+import { StlrContext } from "../context/StlrContext";
 
 import SigninImage from "../components/SigninScreenComponents/SigninImage";
 import Input from "../components/SigninScreenComponents/Input";
 import LoginBtn from "../components/SigninScreenComponents/LoginBtn";
 import Loading from "../components/SigninScreenComponents/Loading";
+import StlrModal from "../components/SigninScreenComponents/StlrModal";
 
-export default class SigninScreen extends Component {
-  constructor(props) {
-    super();
-    this.state = {
-      username: "",
-      password: "",
-      loading: false
-    };
-  }
+export default function SigninScreen({ navigation }) {
+  const {
+    loading,
+    username,
+    password,
+    setPassword,
+    setUsername,
+    handleSubmit,
+    modal,
+    setModal
+  } = useContext(StlrContext);
 
-  setUsername = text => {
-    this.setState({
-      username: text
-    });
-  };
+  return (
+    <>
+      {loading ? (
+        <Loading />
+      ) : (
+        <View style={styles.viewMain}>
+          <StlrModal modal={modal} setModal={setModal} />
+          <SigninImage />
+          <View style={styles.inputView}>
+            <Input
+              styles={styles.viewStyle}
+              iconName="user-graduate"
+              inputStyle={styles.input}
+              placeholder="Student Number"
+              setter={setUsername}
+              choice={false}
+              label={username}
+            />
+            <Input
+              styles={[styles.inputMargin, styles.viewStyle]}
+              iconName="lock"
+              inputStyle={styles.input}
+              placeholder="Password"
+              setter={setPassword}
+              choice={true}
+              label={password}
+            />
 
-  setPassword = text => {
-    this.setState({
-      password: text
-    });
-  };
-
-  getInfo = async () => {
-    try {
-      const response = await fetch(
-        `http://c78cdf28.ngrok.io/scrape?username=${this.state.username}&password=${this.state.password}`
-      );
-      const data = await response.json();
-      console.log(response.status);
-      if (response.status !== 200) {
-        this.setState({ loading: false });
-        this.setPassword("");
-        this.setUsername("");
-      } else {
-        this.setState({ loading: false });
-        this.props.navigation.navigate("EventsList");
-        return data;
-      }
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  handleSubmit = async () => {
-    this.setState({
-      loading: true
-    });
-    if (this.state.username === "" && this.state.password === "") {
-      return console.log("try again");
-    }
-
-    if (!this.state.username.includes("B000")) {
-      console.log(this.state);
-      this.setUsername("");
-      this.setPassword("");
-      return console.log("invalid username");
-    }
-
-    await this.getInfo();
-  };
-
-  render() {
-    return (
-      <>
-        {this.state.loading ? (
-          <Loading />
-        ) : (
-          <View style={styles.viewMain}>
-            <SigninImage />
-            <View style={styles.inputView}>
-              <Input
-                styles={styles.viewStyle}
-                iconName="user-graduate"
-                inputStyle={styles.input}
-                placeholder="Student Number"
-                setter={this.setUsername}
-                choice={false}
-                label={this.state.username}
-              />
-              <Input
-                styles={[styles.inputMargin, styles.viewStyle]}
-                iconName="lock"
-                inputStyle={styles.input}
-                placeholder="Password"
-                setter={this.setPassword}
-                choice={true}
-                label={this.state.password}
-              />
-              <LoginBtn
-                navigation={this.props.navigation}
-                handleSubmit={this.handleSubmit}
-                username={this.state.username}
-                password={this.state.password}
-              />
-              <View style={styles.descriptionView}>
-                <Text style={styles.descriptionViewText}>
-                  Please make sure you are enrolled in the Transformative
-                  Learning course on Moodle
-                </Text>
-              </View>
+            <LoginBtn
+              navigation={navigation}
+              handleSubmit={handleSubmit}
+              username={username}
+              password={password}
+            />
+            <View style={styles.descriptionView}>
+              <Text style={styles.descriptionViewText}>
+                Please make sure you are enrolled in the Transformative Learning
+                course on Moodle
+              </Text>
             </View>
           </View>
-        )}
-      </>
-    );
-  }
+        </View>
+      )}
+    </>
+  );
 }
 
 const styles = StyleSheet.create({

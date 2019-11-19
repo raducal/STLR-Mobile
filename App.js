@@ -3,14 +3,14 @@ import { createAppContainer, createSwitchNavigator } from "react-navigation";
 import { createStackNavigator } from "react-navigation-stack";
 import { createBottomTabNavigator } from "react-navigation-tabs";
 
-import createDataContext from "./src/context/createDataContext";
+import StlrContextProvider from "./src/context/StlrContext";
+import { setNavigator } from "./src/navigationRef";
 
 // screens
 import AccountScreen from "./src/screens/AccountScreen";
 import CameraScreen from "./src/screens/CameraScreen";
 import EventsScreen from "./src/screens/EventsScreen";
 import SigninScreen from "./src/screens/SigninScreen";
-import EventDetailsScreen from "./src/screens/EventDetailScreen";
 import CalenderScreen from "./src/screens/CalenderScreen";
 
 // Icons
@@ -34,8 +34,7 @@ const SwitchNavigator = createSwitchNavigator({
   mainFlow: createBottomTabNavigator({
     Events: createStackNavigator(
       {
-        EventsList: EventsScreen,
-        EventDetails: EventDetailsScreen
+        EventsList: EventsScreen
       },
       {
         headerMode: "none",
@@ -76,12 +75,10 @@ const SwitchNavigator = createSwitchNavigator({
 
 const App = createAppContainer(SwitchNavigator);
 
-const { Provider } = createDataContext();
-
 export default () => {
   return (
-    <Provider>
-      <App />
-    </Provider>
+    <StlrContextProvider>
+      <App ref={navigator => setNavigator(navigator)} />
+    </StlrContextProvider>
   );
 };
