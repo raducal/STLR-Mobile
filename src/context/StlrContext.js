@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
 import { navigate } from "../navigationRef";
 
@@ -11,23 +12,43 @@ const StlrContextProvider = ({ children }) => {
   const [events, setEvents] = useState([]);
   const [modal, setModal] = useState(false);
 
-  const getInfo = async () => {
-    try {
-      const response = await fetch(
-        `http://2916cb04.ngrok.io/scrape?username=${username}&password=${password}`
-      );
-      const data = await response.json();
-      if (response.status !== 200) {
-        setLoading(false);
-        setModal(true);
-        setPassword("");
-        setUsername("");
-      } else {
-        setLoading(false);
-        setModal(false);
-        setEvents([...events, data.info[0]]);
-        navigate("EventsList");
+  const getEvents = async () => {
+    const response = await axios.get("http://96fcf60e.ngrok.io/scrape");
+    const data = await response.json();
+
+    console.log(data);
+  };
+
+  const login = async () => {
+    const config = {
+      headers: {
+        "Content-Type": "application/json"
       }
+    };
+
+    let user = {
+      username,
+      password
+    };
+    try {
+      axios
+        .post("http://96fcf60e.ngrok.io/scrape", JSON.stringify(user), config)
+        .then(response => {
+          console.log(response.data.msg);
+          if (response.data.msg === "Fail") {
+            setLoading(false);
+            setModal(true);
+            setPassword("");
+            setUsername("");
+          } else {
+            setLoading(false);
+            setModal(false);
+            navigate("EventsList");
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
     } catch (error) {
       console.log(error);
     }
@@ -40,16 +61,7 @@ const StlrContextProvider = ({ children }) => {
       setLoading(false);
       return console.log("try again");
     }
-
-    if (!username.toUpperCase().includes("B000")) {
-      setUsername("");
-      setPassword("");
-      setLoading(false);
-      setModal(true);
-      return console.log("invalid username");
-    }
-
-    await getInfo();
+    await login();
   };
 
   return (
