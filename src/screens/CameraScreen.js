@@ -4,14 +4,17 @@ import * as Permissions from "expo-permissions";
 import { Camera } from "expo-camera";
 import { NavigationEvents } from "react-navigation";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { SafeAreaView } from "react-navigation";
+import { StlrContext } from "../context/StlrContext";
 
 export default class CameraScreen extends Component {
+  static contextType = StlrContext;
+
   state = {
     hasCameraPermission: null,
     type: Camera.Constants.Type.back,
     isFocused: true,
-    scanned: false
+    scanned: false,
+    qrInfo: ""
   };
 
   async componentWillMount() {
@@ -20,8 +23,12 @@ export default class CameraScreen extends Component {
   }
 
   handleBarCode = ({ type, data }) => {
+    const { setQrData, checkQrCode } = this.context;
     this.setState({ scanned: true });
     alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    // this.setState({ qrInfo: data });
+    setQrData(data);
+    checkQrCode(data);
     setTimeout(() => {
       this.handleBarCodeNotScanned();
     }, 2000);

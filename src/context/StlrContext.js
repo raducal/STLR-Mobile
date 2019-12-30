@@ -11,9 +11,14 @@ const StlrContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [events, setEvents] = useState([]);
   const [modal, setModal] = useState(false);
+  const [qrData, setQrData] = useState("");
+
+  useEffect(() => {
+    console.log(qrData);
+  });
 
   const getEvents = async () => {
-    const response = await axios.get("http://96fcf60e.ngrok.io/scrape");
+    const response = await axios.get("http://0132f4c0.ngrok.io/scrape");
     const data = await response.json();
 
     console.log(data);
@@ -32,7 +37,7 @@ const StlrContextProvider = ({ children }) => {
     };
     try {
       axios
-        .post("http://96fcf60e.ngrok.io/scrape", JSON.stringify(user), config)
+        .post("http://0132f4c0.ngrok.io/scrape", JSON.stringify(user), config)
         .then(response => {
           console.log(response.data.msg);
           if (response.data.msg === "Fail") {
@@ -64,6 +69,30 @@ const StlrContextProvider = ({ children }) => {
     await login();
   };
 
+  const checkQrCode = qr => {
+    const config = {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    };
+    let info = {
+      qr,
+      username
+    };
+    try {
+      axios
+        .post("http://0132f4c0.ngrok.io/qrcode", JSON.stringify(info), config)
+        .then(res => {
+          console.log(res.data);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <StlrContext.Provider
       value={{
@@ -76,7 +105,9 @@ const StlrContextProvider = ({ children }) => {
         handleSubmit,
         events,
         modal,
-        setModal
+        setModal,
+        setQrData,
+        checkQrCode
       }}
     >
       {children}
