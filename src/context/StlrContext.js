@@ -37,7 +37,7 @@ const StlrContextProvider = ({ children }) => {
     };
     try {
       axios
-        .post("http://0132f4c0.ngrok.io/scrape", JSON.stringify(user), config)
+        .post("https://ebe3985a.ngrok.io/scrape", JSON.stringify(user), config)
         .then(response => {
           console.log(response.data.msg);
           if (response.data.msg === "Fail") {
