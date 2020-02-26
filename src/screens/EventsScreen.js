@@ -1,5 +1,6 @@
 import React, { useEffect, useContext, useState } from "react";
 import { SafeAreaView } from "react-navigation";
+import { Text } from "react-native";
 
 import Header from "../components/SigninScreenComponents/Header";
 import TaggedEvents from "../components/EventsScreenComponents/TaggedEvents";
@@ -9,28 +10,33 @@ import { StlrContext } from "../context/StlrContext";
 const fakeevents = [
   {
     title: "STLR 1",
-    Date: "19/08/2019",
-    Description: "Very cool event"
+    due: "19/08/2019",
+    Description: "Very cool event",
+    qrID: "1"
   },
   {
     title: "STLR 2",
-    Date: "19/08/2019",
-    Description: "Very shit event"
+    due: "19/08/2019",
+    Description: "Very shit event",
+    qrID: "2"
   },
   {
     title: "STLR 3",
-    Date: "19/08/2019",
-    Description: "cool event"
+    due: "19/08/2019",
+    Description: "cool event",
+    qrID: "3"
   },
   {
     title: "STLR 4",
-    Date: "19/08/2019",
-    Description: "Very cool"
+    due: "19/08/2019",
+    Description: "Very cool",
+    qrID: "4"
   },
   {
     title: "STLR 5",
     Date: "19/08/2019",
-    Description: "Very cool"
+    Description: "Very cool",
+    qrID: "5"
   }
 ];
 
@@ -63,15 +69,20 @@ const fakeStudentEvents = [
 ];
 
 const EventsScreen = () => {
-  const { events, username, setUsername } = useContext(StlrContext);
+  const {
+    events,
+    username,
+    setUsername,
+    getEvents,
+    isAuthenticated
+  } = useContext(StlrContext);
   const [active, setActive] = useState(false);
+  const [current, setCurrent] = useState([]);
 
   useEffect(() => {
-    (async () => {
-      setUsername(username.toUpperCase());
-      // await console.log(events);
-    })();
-  });
+    getEvents();
+    setUsername(username.toUpperCase());
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1 }} forceInset={{ top: "always" }}>
@@ -82,11 +93,7 @@ const EventsScreen = () => {
         active={active}
         setActive={setActive}
       />
-      {active ? (
-        <TaggedEvents data={fakeStudentEvents} />
-      ) : (
-        <TaggedEvents data={fakeevents} />
-      )}
+      {!isAuthenticated ? <Text>Nope</Text> : <TaggedEvents data={events[0]} />}
     </SafeAreaView>
   );
 };

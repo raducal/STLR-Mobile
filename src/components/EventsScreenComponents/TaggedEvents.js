@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet, FlatList } from "react-native";
 
-export default function TaggedEvents({ data }) {
+const TaggedEvents = ({ data }) => {
   return (
     <View style={styles.mainView}>
       <FlatList
@@ -10,21 +10,21 @@ export default function TaggedEvents({ data }) {
         renderItem={({ item }) => (
           <View style={styles.eventView}>
             <View style={styles.eventDateView}>
-              <Text style={styles.eventContent}>{item.Date}</Text>
+              <Text style={styles.eventContent}>{item.due}</Text>
+              <Text>{item.time}</Text>
             </View>
             <View style={styles.eventDescView}>
               <View style={styles.eventContent}>
                 <Text style={styles.titleStyle}>{item.title}</Text>
-                <Text>{item.Description}</Text>
               </View>
             </View>
           </View>
         )}
-        keyExtractor={item => item.title}
+        keyExtractor={item => item.qrID}
       />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   mainView: {
@@ -53,10 +53,12 @@ const styles = StyleSheet.create({
     flex: 3
   },
   titleStyle: {
-    fontSize: 20,
+    fontSize: 17,
     paddingBottom: 15
   },
   eventContent: {
     padding: 10
   }
 });
+
+export default TaggedEvents;

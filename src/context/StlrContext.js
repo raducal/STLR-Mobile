@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from "react";
 import axios from "axios";
+import { AsyncStorage } from "react-native";
 
 import { navigate } from "../navigationRef";
 
@@ -12,16 +13,54 @@ const StlrContextProvider = ({ children }) => {
   const [events, setEvents] = useState([]);
   const [modal, setModal] = useState(false);
   const [qrData, setQrData] = useState("");
+  const [message, setMessage] = useState("");
+  const [token, setToken] = useState(null);
+  const [isAuthenticated, setAuthentication] = useState(null);
 
   useEffect(() => {
     console.log(qrData);
-  });
+  }, []);
 
   const getEvents = async () => {
-    const response = await axios.get("http://0132f4c0.ngrok.io/scrape");
-    const data = await response.json();
+    const store = JSON.parse(await AsyncStorage.getItem("login"));
+    try {
+      console.log("starting");
+      if (store && store.isAuthenticated) {
+        const response = await axios.get("http://f1d0ddfd.ngrok.io/scrape", {
+          headers: { Authorization: `Bearer ${store.token}` }
+        });
 
-    console.log(data);
+        setToken(store.token);
+        const events = response.data.event;
+
+        let currentEvents = [];
+
+        events.map(event => {
+          if (event.due !== undefined) {
+            const index = event.due.indexOf("+");
+            const str = event.due.slice(0, index - 4);
+            const colon = str.indexOf(":");
+            const time = str.slice(colon - 2, colon + 3);
+            const date = str.slice(0, colon - 3);
+            event.time = time;
+            event.due = date;
+          } else {
+            event.time = "N/A";
+          }
+
+          if (event.status === "current") {
+            currentEvents.push(event);
+          }
+        });
+
+        setEvents(prev => [...prev, currentEvents]);
+      } else {
+        console.log(store);
+        console.log("nope");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const login = async () => {
@@ -36,26 +75,30 @@ const StlrContextProvider = ({ children }) => {
       password
     };
     try {
-      axios
-        .post("https://ebe3985a.ngrok.io/scrape", JSON.stringify(user), config)
-        .then(response => {
-          console.log(response.data.msg);
-          if (response.data.msg === "Fail") {
-            setLoading(false);
-            setModal(true);
-            setPassword("");
-            setUsername("");
-          } else {
-            setLoading(false);
-            setModal(false);
-            navigate("EventsList");
-          }
+      let res = await axios.post(
+        "http://f1d0ddfd.ngrok.io/scrape",
+        JSON.stringify(user),
+        config
+      );
+      let token = res.data.token;
+      await AsyncStorage.setItem(
+        "login",
+        JSON.stringify({
+          token: res.data.token,
+          isAuthenticated: true
         })
-        .catch(error => {
-          console.log(error);
-        });
+      );
+      setToken(token);
+      setAuthentication(true);
+      setLoading(false);
+      setModal(false);
+      navigate("EventsList");
     } catch (error) {
       console.log(error);
+      setLoading(false);
+      setModal(true);
+      setPassword("");
+      setUsername("");
     }
   };
 
@@ -69,7 +112,7 @@ const StlrContextProvider = ({ children }) => {
     await login();
   };
 
-  const checkQrCode = qr => {
+  const checkQrCode = async qr => {
     const config = {
       headers: {
         "Content-Type": "application/json"
@@ -80,16 +123,16 @@ const StlrContextProvider = ({ children }) => {
       username
     };
     try {
-      axios
-        .post("http://0132f4c0.ngrok.io/qrcode", JSON.stringify(info), config)
-        .then(res => {
-          console.log(res.data);
-        })
-        .catch(err => {
-          console.log(err);
-        });
+      await axios.put(
+        "http://f1d0ddfd.ngrok.io/qrcode",
+        JSON.stringify(info),
+        config
+      );
+
+      setMessage("Successfully Enrolled");
     } catch (error) {
       console.log(error);
+      setMessage("Please try again");
     }
   };
 
@@ -107,7 +150,10 @@ const StlrContextProvider = ({ children }) => {
         modal,
         setModal,
         setQrData,
-        checkQrCode
+        checkQrCode,
+        getEvents,
+        isAuthenticated,
+        message
       }}
     >
       {children}

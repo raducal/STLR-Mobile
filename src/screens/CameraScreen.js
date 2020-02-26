@@ -23,10 +23,9 @@ export default class CameraScreen extends Component {
   }
 
   handleBarCode = ({ type, data }) => {
-    const { setQrData, checkQrCode } = this.context;
+    const { setQrData, checkQrCode, message } = this.context;
     this.setState({ scanned: true });
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-    // this.setState({ qrInfo: data });
+    alert(message);
     setQrData(data);
     checkQrCode(data);
     setTimeout(() => {
