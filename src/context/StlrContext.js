@@ -26,7 +26,7 @@ const StlrContextProvider = ({ children }) => {
     try {
       console.log("starting");
       if (store && store.isAuthenticated) {
-        const response = await axios.get("http://f1d0ddfd.ngrok.io/scrape", {
+        const response = await axios.get("http://bcd5e2a0.ngrok.io/scrape", {
           headers: { Authorization: `Bearer ${store.token}` }
         });
 
@@ -76,7 +76,7 @@ const StlrContextProvider = ({ children }) => {
     };
     try {
       let res = await axios.post(
-        "http://f1d0ddfd.ngrok.io/scrape",
+        "http://bcd5e2a0.ngrok.io/scrape",
         JSON.stringify(user),
         config
       );
@@ -124,7 +124,7 @@ const StlrContextProvider = ({ children }) => {
     };
     try {
       await axios.put(
-        "http://f1d0ddfd.ngrok.io/qrcode",
+        "http://bcd5e2a0.ngrok.io/qrcode",
         JSON.stringify(info),
         config
       );
@@ -132,7 +132,7 @@ const StlrContextProvider = ({ children }) => {
       setMessage("Successfully Enrolled");
     } catch (error) {
       console.log(error);
-      setMessage("Please try again");
+      setMessage("Please Try Again");
     }
   };
 

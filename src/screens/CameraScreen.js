@@ -14,7 +14,8 @@ export default class CameraScreen extends Component {
     type: Camera.Constants.Type.back,
     isFocused: true,
     scanned: false,
-    qrInfo: ""
+    qrInfo: "",
+    message: ""
   };
 
   async componentWillMount() {
@@ -25,9 +26,9 @@ export default class CameraScreen extends Component {
   handleBarCode = ({ type, data }) => {
     const { setQrData, checkQrCode, message } = this.context;
     this.setState({ scanned: true });
-    alert(message);
-    setQrData(data);
     checkQrCode(data);
+    setQrData(data);
+    alert(message);
     setTimeout(() => {
       this.handleBarCodeNotScanned();
     }, 2000);
