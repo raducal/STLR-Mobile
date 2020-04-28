@@ -1,6 +1,8 @@
 import React, { createContext, useState, useEffect } from "react";
-import axios from "axios";
-import { AsyncStorage } from "react-native";
+import { AsyncStorage, Dimensions } from "react-native";
+import * as Device from "expo-device";
+
+import stlrApi from "../api/axios";
 
 import { navigate } from "../navigationRef";
 
@@ -16,18 +18,20 @@ const StlrContextProvider = ({ children }) => {
   const [message, setMessage] = useState("");
   const [token, setToken] = useState(null);
   const [isAuthenticated, setAuthentication] = useState(null);
-
-  useEffect(() => {
-    console.log(qrData);
-  }, []);
+  const [screen, setScreen] = useState({
+    width: "",
+    height: "",
+    brand: "",
+    model: "",
+  });
 
   const getEvents = async () => {
     const store = JSON.parse(await AsyncStorage.getItem("login"));
     try {
       console.log("starting");
       if (store && store.isAuthenticated) {
-        const response = await axios.get("http://bcd5e2a0.ngrok.io/scrape", {
-          headers: { Authorization: `Bearer ${store.token}` }
+        const response = await stlrApi.get("/stlr/events", {
+          headers: { Authorization: `Bearer ${store.token}` },
         });
 
         setToken(store.token);
@@ -35,7 +39,7 @@ const StlrContextProvider = ({ children }) => {
 
         let currentEvents = [];
 
-        events.map(event => {
+        events.map((event) => {
           if (event.due !== undefined) {
             const index = event.due.indexOf("+");
             const str = event.due.slice(0, index - 4);
@@ -53,39 +57,49 @@ const StlrContextProvider = ({ children }) => {
           }
         });
 
-        setEvents(prev => [...prev, currentEvents]);
-      } else {
-        console.log(store);
-        console.log("nope");
+        setEvents((prev) => [...prev, currentEvents]);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
+  const getScreenSize = () => {
+    const screenWidth = Math.round(Dimensions.get("window").width);
+    const screenHeight = Math.round(Dimensions.get("window").height);
+    setScreen({
+      width: screenWidth,
+      height: screenHeight,
+      brand: Device.brand,
+      model: Device.modelName,
+    });
+  };
+
   const login = async () => {
     const config = {
       headers: {
-        "Content-Type": "application/json"
-      }
+        "Content-Type": "application/json",
+      },
     };
 
     let user = {
-      username,
-      password
+      username: username.toLowerCase(),
+      password,
+      width: screen.width.toString(),
+      height: screen.height.toString(),
+      brand: screen.brand,
+      model: screen.model,
     };
+
     try {
-      let res = await axios.post(
-        "http://bcd5e2a0.ngrok.io/scrape",
-        JSON.stringify(user),
-        config
-      );
+      let res = await stlrApi.post("/stlr/users", JSON.stringify(user), config);
+      await getEvents();
       let token = res.data.token;
       await AsyncStorage.setItem(
         "login",
         JSON.stringify({
           token: res.data.token,
-          isAuthenticated: true
+          isAuthenticated: true,
         })
       );
       setToken(token);
@@ -112,22 +126,18 @@ const StlrContextProvider = ({ children }) => {
     await login();
   };
 
-  const checkQrCode = async qr => {
+  const checkQrCode = async (qr) => {
     const config = {
       headers: {
-        "Content-Type": "application/json"
-      }
+        "Content-Type": "application/json",
+      },
     };
     let info = {
       qr,
-      username
+      username,
     };
     try {
-      await axios.put(
-        "http://bcd5e2a0.ngrok.io/qrcode",
-        JSON.stringify(info),
-        config
-      );
+      await stlrApi.put("/stlr/events", JSON.stringify(info), config);
 
       setMessage("Successfully Enrolled");
     } catch (error) {
@@ -153,7 +163,8 @@ const StlrContextProvider = ({ children }) => {
         checkQrCode,
         getEvents,
         isAuthenticated,
-        message
+        message,
+        getScreenSize,
       }}
     >
       {children}

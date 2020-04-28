@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { StlrContext } from "../context/StlrContext";
 
@@ -17,8 +17,13 @@ export default function SigninScreen({ navigation }) {
     setUsername,
     handleSubmit,
     modal,
-    setModal
+    setModal,
+    getScreenSize
   } = useContext(StlrContext);
+
+  useEffect(() => {
+    getScreenSize();
+  }, []);
 
   return (
     <>
