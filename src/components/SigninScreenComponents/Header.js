@@ -6,7 +6,7 @@ export default function Header({
   username,
   options,
   active,
-  setActive
+  setActive,
 }) {
   return (
     <View style={styles.topView}>
@@ -14,7 +14,7 @@ export default function Header({
         <Text style={styles.topViewText}>Your {message}</Text>
         <Text style={{ fontSize: 14, color: "#E0E0E0" }}>{username}</Text>
       </View>
-      {options ? (
+      {/* {options ? (
         <View style={styles.buttonViews}>
           <TouchableOpacity
             style={
@@ -43,7 +43,7 @@ export default function Header({
         </View>
       ) : (
         <></>
-      )}
+      )} */}
     </View>
   );
 }
@@ -54,28 +54,28 @@ const styles = StyleSheet.create({
     height: 120,
     flexDirection: "column",
     lineHeight: 50,
-    paddingTop: 10
+    paddingTop: 10,
   },
   heading: {
-    paddingHorizontal: 15
+    paddingHorizontal: 15,
   },
   buttonViews: {
     flexDirection: "row",
     flex: 1,
     justifyContent: "flex-end",
     alignItems: "flex-end",
-    color: "#fff"
+    color: "#fff",
   },
   buttons: {
     flex: 1,
     alignItems: "center",
     borderColor: "rgba(255, 255, 255, 0.4)",
     paddingVertical: 8,
-    borderWidth: 1
+    borderWidth: 1,
   },
   topViewText: {
     fontSize: 20,
     paddingBottom: 5,
-    color: "#E0E0E0"
-  }
+    color: "#E0E0E0",
+  },
 });

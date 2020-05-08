@@ -22,19 +22,19 @@ import AccountIcon from "react-native-vector-icons/FontAwesome5";
 const SwitchNavigator = createSwitchNavigator({
   loginFlow: createStackNavigator(
     {
-      Signin: SigninScreen
+      Signin: SigninScreen,
     },
     {
       headerMode: "none",
       navigationOptions: {
-        headerVisible: false
-      }
+        headerVisible: false,
+      },
     }
   ),
   mainFlow: createBottomTabNavigator({
     Events: createStackNavigator(
       {
-        EventsList: EventsScreen
+        EventsList: EventsScreen,
       },
       {
         headerMode: "none",
@@ -42,8 +42,8 @@ const SwitchNavigator = createSwitchNavigator({
           headerVisible: false,
           tabBarIcon: () => (
             <EventIcon name="event" color={"#A9A9A9"} size={20} />
-          )
-        }
+          ),
+        },
       }
     ),
     Scanner: {
@@ -51,26 +51,26 @@ const SwitchNavigator = createSwitchNavigator({
       navigationOptions: {
         tabBarIcon: () => (
           <ScannerIcon name="md-qr-scanner" color={"#A9A9A9"} size={20} />
-        )
-      }
+        ),
+      },
     },
     Calendar: {
       screen: CalenderScreen,
       navigationOptions: {
         tabBarIcon: () => (
           <CalenderIcon name="calendar" color={"#A9A9A9"} size={20} />
-        )
-      }
+        ),
+      },
     },
-    Account: {
-      screen: AccountScreen,
-      navigationOptions: {
-        tabBarIcon: () => (
-          <AccountIcon name="user-graduate" color={"#A9A9A9"} size={20} />
-        )
-      }
-    }
-  })
+    // Account: {
+    //   screen: AccountScreen,
+    //   navigationOptions: {
+    //     tabBarIcon: () => (
+    //       <AccountIcon name="user-graduate" color={"#A9A9A9"} size={20} />
+    //     ),
+    //   },
+    // },
+  }),
 });
 
 const App = createAppContainer(SwitchNavigator);
@@ -78,7 +78,7 @@ const App = createAppContainer(SwitchNavigator);
 export default () => {
   return (
     <StlrContextProvider>
-      <App ref={navigator => setNavigator(navigator)} />
+      <App ref={(navigator) => setNavigator(navigator)} />
     </StlrContextProvider>
   );
 };

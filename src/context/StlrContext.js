@@ -57,6 +57,17 @@ const StlrContextProvider = ({ children }) => {
           }
         });
 
+        let newEvent = {
+          due: "Apr 27 2020 10:05:00",
+          present: [],
+          qrID: "83a9c988-f463-46c5-8a38-160780b07362",
+          status: "expired",
+          text: "https://moodle.itb.ie/mod/assign/view.php?id=255099",
+          title: "Test Assignment",
+        };
+
+        currentEvents.push(newEvent);
+
         setEvents((prev) => [...prev, currentEvents]);
       }
     } catch (error) {
@@ -92,8 +103,7 @@ const StlrContextProvider = ({ children }) => {
     };
 
     try {
-      let res = await stlrApi.post("/stlr/users", JSON.stringify(user), config);
-      await getEvents();
+      let res = await stlrApi.post("/stlr/users", user, config);
       let token = res.data.token;
       await AsyncStorage.setItem(
         "login",
@@ -137,12 +147,18 @@ const StlrContextProvider = ({ children }) => {
       username,
     };
     try {
-      await stlrApi.put("/stlr/events", JSON.stringify(info), config);
-
-      setMessage("Successfully Enrolled");
+      let res = await stlrApi.put("/stlr/events", info, config);
+      console.log(res.data.msg);
+      if (res.data.msg === "exists") {
+        setMessage("Already Enrolled");
+      } else {
+        setMessage("Successfully Enrolled");
+      }
+      return;
     } catch (error) {
       console.log(error);
       setMessage("Please Try Again");
+      return;
     }
   };
 
@@ -164,6 +180,7 @@ const StlrContextProvider = ({ children }) => {
         getEvents,
         isAuthenticated,
         message,
+        setMessage,
         getScreenSize,
       }}
     >
